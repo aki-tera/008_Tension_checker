@@ -35,6 +35,7 @@ def get_train_data02():
         #最初のファイルのみヘッダを追加、他は追加しない
         os.chdir(GTD2_current_path)
         #トレーニング用とテスト用は分けて保存する
+        #読み込んだパスの先頭が100なのでラベル5からとなる
         if temp_label == 5:
             #最初のファイルのみヘッダを追加する必要があるので、処理を分ける
             #登録するファイルは上書き保存とする
@@ -95,6 +96,7 @@ def Plot_data():
     Returns
     ----------
     """
+    PD_index = {9:"60", 8:"70", 7:"80", 6:"90", 5:"100", 4:"110", 3:"120", 2:"130", 1:"140", 0:"150"}
     PD_label = np.loadtxt("test.csv", skiprows=1, delimiter=",", usecols=(1))
     PD_data = np.loadtxt("test.csv", delimiter=",", usecols=(range(33,183)))
 
@@ -116,7 +118,7 @@ def Plot_data():
             temp_label = PD_label[row]
             #凡例を表示する折れ線グラフ
             #jetというデフォルトカラーマップを使用して、グラデーション化する
-            ax.plot(PD_data[0,:], PD_data[row+1,:], color=cm.jet(PD_label[row]/10), label=PD_label[row], linewidth=1)
+            ax.plot(PD_data[0,:], PD_data[row+1,:], color=cm.jet(PD_label[row]/10), label=PD_index[PD_label[row]], linewidth=1)
         else:
             #凡例を表示しない折れ線グラフ
             ax.plot(PD_data[0,:], PD_data[row+1,:], color=cm.jet(PD_label[row]/10), linewidth=0.1)
@@ -129,7 +131,7 @@ def Plot_data():
 
 def main():
     #get_train_data01()
-    get_train_data02()
+    #get_train_data02()
     Plot_data()
 
 if __name__ == "__main__":
