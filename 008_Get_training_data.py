@@ -1,12 +1,21 @@
 import glob
 import os
-
 import pandas as pd
 
-import csv
+import numpy as np
+from matplotlib.pyplot import figure
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 def get_train_data():
-    GTD_list = glob.glob("raw/3rd/ベルト2/*")
+    """
+    フォルダで分けられたファイルから所定のデータを分割して出力する
+    Parameters
+    ----------
+    Returns
+    ----------
+    """
+    GTD_list = glob.glob("raw/3rd/ベルト1/*")
     GTD_current_path = os.getcwd()
 
     for raw in GTD_list:
@@ -32,7 +41,10 @@ def get_train_data():
 
         #最初のファイルのみヘッダを追加、他は追加しない
         os.chdir(GTD_current_path)
+        #トレーニング用とテスト用は分けて保存する
         if temp_label == 1:
+            #最初のファイルのみヘッダを追加する必要があるので、処理を分ける
+            #登録するファイルは上書き保存とする
             temp_export[temp_export["data index"] % 19 != 0].to_csv("training.csv", index=False)
             temp_export[temp_export["data index"] % 19 == 0].to_csv("test.csv", index=False)
         else:
@@ -40,12 +52,13 @@ def get_train_data():
             temp_export[temp_export["data index"] % 19 == 0].to_csv("test.csv", mode="a", header=False, index=False)
 
 def Plot_data():
-
-    from matplotlib.pyplot import figure
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    #PD_data = np.loadtxt("test.csv", delimiter=",", usecols=(range(33,184)))
+    """
+    指定されたファイルを表示する
+    Parameters
+    ----------
+    Returns
+    ----------
+    """
     PD_label = np.loadtxt("test.csv", skiprows=1, delimiter=",", usecols=(1))
     PD_data = np.loadtxt("test.csv", delimiter=",", usecols=(range(33,183)))
 
@@ -56,18 +69,21 @@ def Plot_data():
     fig.suptitle("Torque@X2", fontweight="bold")
     #figに属するAxesオブジェクトを作成
     ax = fig.add_subplot(1, 1, 1)
+    #凡例を表示するための事前設定
     temp_counter = 0
     temp_label = 0
-    temp_color = {0:"k", 1:"b", 2:"g", 3:"r", 4:"c", 5:"m", 6:"y", 7:"k", 8:"b", 9:"b"}
+    #すべてのデータをプロットする
     for row in range(PD_data.shape[0]-1):
+        #凡例を表示する折れ線グラフは先頭のデータのみとする
         if temp_counter == 0:
             temp_counter = 1
             temp_label = PD_label[row]
             #凡例を表示する折れ線グラフ
-            ax.plot(PD_data[0,:], PD_data[row+1,:], temp_color[PD_label[row]], label=PD_label[row], linewidth=1)
+            #jetというデフォルトカラーマップを使用して、グラデーション化する
+            ax.plot(PD_data[0,:], PD_data[row+1,:], color=cm.jet(PD_label[row]/10), label=PD_label[row], linewidth=1)
         else:
             #凡例を表示しない折れ線グラフ
-            ax.plot(PD_data[0,:], PD_data[row+1,:], temp_color[PD_label[row]], linewidth=0.1)
+            ax.plot(PD_data[0,:], PD_data[row+1,:], color=cm.jet(PD_label[row]/10), linewidth=0.1)
             if temp_label != PD_label[row]:
                 temp_counter = 0
     ax.legend()
@@ -76,7 +92,7 @@ def Plot_data():
 
 
 def main():
-    #get_train_data()
+    get_train_data()
     Plot_data()
 
 if __name__ == "__main__":
