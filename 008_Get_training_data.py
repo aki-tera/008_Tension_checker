@@ -7,7 +7,44 @@ from matplotlib.pyplot import figure
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-def get_train_data():
+def get_train_data02():
+    """
+    ファイル名で分けられたファイルから所定のデータを分割して出力する
+    Parameters
+    ----------
+    Returns
+    ----------
+    """
+    GTD2_list = glob.glob("raw/3rd/MotorData/B1_*.xlsx")
+    GTD2_current_path = os.getcwd()
+    GTD2_label = {"60":9, "70":8, "80":7, "90":6, "100":5, "110":4, "120":3, "130":2, "140":1, "150":0}
+
+    for row in GTD2_list:
+        print(row)
+        #対象ファイルの名称を使って出力ラベルとする
+        temp_label = GTD2_label[row[21:-7]]
+        #xlsxファイルの読み込み
+        #初めに作業ディレクトリの移動が必要）
+        os.chdir(GTD2_list[0][:17])
+        #ファイル読み込み、欠損値は0とする
+        temp_import = pd.read_excel(row[18:], na_values=0, sheet_name="X2_Torque").fillna(0)
+        #出力ラベルを『data kind』に記入する
+        temp_import["data kind"] = temp_label
+        #特定条件のみ抽出する
+        temp_export = temp_import.query('speedInfoText == "max" & action2Text == "fork in"')
+        #最初のファイルのみヘッダを追加、他は追加しない
+        os.chdir(GTD2_current_path)
+        #トレーニング用とテスト用は分けて保存する
+        if temp_label == 5:
+            #最初のファイルのみヘッダを追加する必要があるので、処理を分ける
+            #登録するファイルは上書き保存とする
+            temp_export[temp_export["data index"] % 19 != 0].to_csv("training.csv", index=False)
+            temp_export[temp_export["data index"] % 19 == 0].to_csv("test.csv", index=False)
+        else:
+            temp_export[temp_export["data index"] % 19 != 0].to_csv("training.csv", mode="a", header=False, index=False)
+            temp_export[temp_export["data index"] % 19 == 0].to_csv("test.csv", mode="a", header=False, index=False)
+
+def get_train_data01():
     """
     フォルダで分けられたファイルから所定のデータを分割して出力する
     Parameters
@@ -15,32 +52,31 @@ def get_train_data():
     Returns
     ----------
     """
-    GTD_list = glob.glob("raw/3rd/ベルト1/*")
-    GTD_current_path = os.getcwd()
+    GTD1_list = glob.glob("raw/3rd/ベルト1/*")
+    GTD1_current_path = os.getcwd()
 
-    for raw in GTD_list:
+    for row in GTD1_list:
         #特定ファイルのパスを取得
-        temp_path = glob.glob(raw+"/X2_Torque.csv")
+        temp_path = glob.glob(row+"/X2_Torque.csv")
         #特定ファイルが無い場合、処理を終わらせる
         if temp_path == []:
-            print(raw+"にはファイルがありません")
+            print(row+"にはファイルがありません")
             continue
         #対象ファイルのフォルダ先頭を出力ラベルとする
-        temp_label = int(os.path.basename(os.path.dirname(raw+"/X2_Torque.csv"))[:2])
+        temp_label = int(os.path.basename(os.path.dirname(row+"/X2_Torque.csv"))[:2])
         print(temp_path)
 
         #CSVファイルの読み込み
         #初めに作業ディレクトリの移動が必要）
-        os.chdir(raw)
+        os.chdir(row)
         #ファイル読み込み、欠損値は0とする
         temp_import = pd.read_csv("X2_Torque.csv", na_values=0).fillna(0)
         #出力ラベルを『data kind』に記入する
         temp_import["data kind"] = temp_label-1
         #特定条件のみ抽出する
         temp_export = temp_import.query('speedInfoText == "max" & action2Text == "fork in"')
-
         #最初のファイルのみヘッダを追加、他は追加しない
-        os.chdir(GTD_current_path)
+        os.chdir(GTD1_current_path)
         #トレーニング用とテスト用は分けて保存する
         if temp_label == 1:
             #最初のファイルのみヘッダを追加する必要があるので、処理を分ける
@@ -92,7 +128,8 @@ def Plot_data():
 
 
 def main():
-    get_train_data()
+    #get_train_data01()
+    get_train_data02()
     Plot_data()
 
 if __name__ == "__main__":
