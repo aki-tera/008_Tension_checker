@@ -6,10 +6,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
 #from keras.layers.convolutional import Conv1D, UpSampling1D
 #from keras.layers.pooling import MaxPooling1D
-<<<<<<< HEAD
-=======
-from keras.callbacks import EarlyStopping
->>>>>>> develop
+#from keras.callbacks import EarlyStopping
 
 #import dlt
 import os
@@ -19,15 +16,9 @@ import matplotlib.pyplot as plt
 
 
 #一度に計算する単位（64、128、256ぐらい。大きすぎると精度が低下する?）
-<<<<<<< HEAD
-batch_size = 64
-#ループする回数
-epochs = 500
-=======
 batch_size = 128
 #ループする回数
 epochs = 150
->>>>>>> develop
 #出力結果は、0～9なので10とする
 num_classes = 10
 
@@ -37,12 +28,6 @@ num_classes = 10
 #test: テスト（当然，学習用データをテスト用データに使いまわすことはない）
 #X: 配列データ
 #y: ラベルデータ（整数値になっているのがふつう）
-<<<<<<< HEAD
-x_train = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=(range(33,183)))
-y_train = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=(1))
-x_test = np.loadtxt("test.csv", skiprows=1, delimiter=",", usecols=(range(33,183)))
-y_test = np.loadtxt("test.csv", skiprows=1, delimiter=",", usecols=(1))
-=======
 x_train_0 = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=(range(33,183)))
 y_train_0 = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=(1))
 x_test = np.loadtxt("test.csv", skiprows=1, delimiter=",", usecols=(range(33,183)))
@@ -58,7 +43,6 @@ for row in range(10):
     print(temp.shape, x_train.shape, y_train.shape)
 
 
->>>>>>> develop
 #x_train、x_testの型を変更する
 #unit8（符号なし8ビット整数型）→ float32（単精度浮動小数点型（符号部1ビット、指数部8ビット、仮数部23
 x_train = x_train.astype('float32')
@@ -84,22 +68,13 @@ y_test = keras.utils.to_categorical(y_test, num_classes)
 #Sequentialは、ただ層を積み上げるだけの単純なモデル
 model = Sequential()
 #入力層は150次元、出力は300次元、活性化関数はReLUを選択
-<<<<<<< HEAD
-model.add(Dense(250, activation='relu', input_shape=(150,)))
-#訓練時の更新においてランダムに入力ユニットを0とする割合であり，過学習の防止に役立つ
-model.add(Dropout(0.5))
-#全結合の中間層、出力は512次元
-model.add(Dense(250, activation='relu'))
-model.add(Dropout(0.5))
-=======
+
 model.add(Dense(150, activation='relu', input_shape=(150,)))
 #訓練時の更新においてランダムに入力ユニットを0とする割合であり，過学習の防止に役立つ
 model.add(Dropout(0.5))
 #全結合の中間層、出力は512次元
 model.add(Dense(150, activation='relu'))
 model.add(Dropout(0.5))
-
->>>>>>> develop
 #全結合の中間層、出力は10次元、ソフトマックス関数を適用する（合計が100％になる）
 model.add(Dense(10, activation='softmax'))
 
@@ -118,12 +93,10 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 
-<<<<<<< HEAD
-=======
+
 # Early-stopping
 #es = EarlyStopping(patience=0, verbose=1)
 
->>>>>>> develop
 #fitは訓練用データを一括で与えると内部でbatch_size分に分割して学習
 #自分でバッチサイズを作る場合は、fit_generatorを使用する
 #verboseはプログレスバーを表示ON/OFFさせる
@@ -135,11 +108,10 @@ history = model.fit(x_train, y_train,
                     verbose=1,
                     validation_data=(x_test, y_test))
 
-<<<<<<< HEAD
-=======
+
 """                    callbacks=[es],"""
 
->>>>>>> develop
+
 #テストの実施
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
