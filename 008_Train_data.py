@@ -6,7 +6,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
 #from keras.layers.convolutional import Conv1D, UpSampling1D
 #from keras.layers.pooling import MaxPooling1D
-from keras.callbacks import EarlyStopping
+#from keras.callbacks import EarlyStopping
 
 #import dlt
 import os
