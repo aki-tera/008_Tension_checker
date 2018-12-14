@@ -1,11 +1,11 @@
 import numpy as np
 import keras
-from keras.datasets import mnist
+#from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
-from keras.layers.convolutional import Conv1D, UpSampling1D
-from keras.layers.pooling import MaxPooling1D
+#from keras.layers.convolutional import Conv1D, UpSampling1D
+#from keras.layers.pooling import MaxPooling1D
 
 #import dlt
 import os
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 #一度に計算する単位（64、128、256ぐらい。大きすぎると精度が低下する?）
-batch_size = 128
+batch_size = 64
 #ループする回数
 epochs = 500
 #出力結果は、0～9なので10とする
@@ -102,17 +102,6 @@ folder = "results"
 if not os.path.exists(folder):
     os.makedirs(folder)
 model.save(os.path.join(folder, "my_model.h5"))
-
-
-#個々の結果を表示する
-#個々の結果を予想する
-preds = model.predict(x_test)
-cls = model.predict_classes(x_test)
-#小数点第3位まで表示
-np.set_printoptions(suppress=True, precision=5)
-for row in range(10):
-    print("Input：", y_test[row*10], "　　　Predict：", cls[row*10])
-    print(preds[row*10])
 
 
 #結果をプロットする
