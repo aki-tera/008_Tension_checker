@@ -7,11 +7,17 @@ from keras.optimizers import RMSprop
 from keras.layers.convolutional import Conv1D, UpSampling1D
 from keras.layers.pooling import MaxPooling1D
 
+#import dlt
+import os
 
-#一度に計算する単位（大きすぎると精度が低下する）
+import matplotlib.pyplot as plt
+
+
+
+#一度に計算する単位（64、128、256ぐらい。大きすぎると精度が低下する?）
 batch_size = 128
 #ループする回数
-epochs = 300
+epochs = 500
 #出力結果は、0～9なので10とする
 num_classes = 10
 
@@ -46,30 +52,16 @@ y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 
-#TensorBoard表示のための準備
-### add for TensorBoard
-import keras.callbacks
-import keras.backend.tensorflow_backend as KTF
-import tensorflow as tf
-
-old_session = KTF.get_session()
-
-session = tf.Session('')
-KTF.set_session(session)
-KTF.set_learning_phase(1)
-###
-
-
 #Sequential()
 #Sequentialは、ただ層を積み上げるだけの単純なモデル
 model = Sequential()
 #入力層は150次元、出力は300次元、活性化関数はReLUを選択
 model.add(Dense(250, activation='relu', input_shape=(150,)))
 #訓練時の更新においてランダムに入力ユニットを0とする割合であり，過学習の防止に役立つ
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 #全結合の中間層、出力は512次元
 model.add(Dense(250, activation='relu'))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 #全結合の中間層、出力は10次元、ソフトマックス関数を適用する（合計が100％になる）
 model.add(Dense(10, activation='softmax'))
 
@@ -88,15 +80,6 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 
-
-#TensorBoard表示のための準備
-#logフォルダにログを出力する
-### add for TensorBoard
-tb_cb = keras.callbacks.TensorBoard(log_dir="log/", histogram_freq=1)
-cbks = [tb_cb]
-###
-
-
 #fitは訓練用データを一括で与えると内部でbatch_size分に分割して学習
 #自分でバッチサイズを作る場合は、fit_generatorを使用する
 #verboseはプログレスバーを表示ON/OFFさせる
@@ -106,25 +89,34 @@ history = model.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=epochs,
                     verbose=1,
-                    callbacks=cbks,
                     validation_data=(x_test, y_test))
 
 #テストの実施
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
-print(score)
 
 
-### add for TensorBoard
-KTF.set_session(old_session)
-###
+#結果を保存する
+folder = "results"
+if not os.path.exists(folder):
+    os.makedirs(folder)
+model.save(os.path.join(folder, "my_model.h5"))
 
 
-import matplotlib.pyplot as plt
+#個々の結果を表示する
+#個々の結果を予想する
+preds = model.predict(x_test)
+cls = model.predict_classes(x_test)
+#小数点第3位まで表示
+np.set_printoptions(suppress=True, precision=5)
+for row in range(10):
+    print("Input：", y_test[row*10], "　　　Predict：", cls[row*10])
+    print(preds[row*10])
+
+
+#結果をプロットする
 def plot_history(history):
-    # print(history.history.keys())
-
     # 精度の履歴をプロット
     plt.subplot(2,1,1)
     plt.plot(history.history['acc'], marker='.')
