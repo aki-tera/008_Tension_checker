@@ -13,7 +13,7 @@ num_classes = 10
 
 TC_index = {9:"60", 8:"70", 7:"80", 6:"90", 5:"100", 4:"110", 3:"120", 2:"130", 1:"140", 0:"150"}
 
-x_test_0 = np.loadtxt("sample.csv", skiprows=1, delimiter=",", usecols=(range(0,150)))
+x_test_0 = np.loadtxt("sample.csv", skiprows=1, delimiter=",", usecols=(range(1,151)))
 y_test_0 = np.loadtxt("sample.csv", skiprows=1, delimiter=",", usecols=(0))
 x_test_0 = x_test_0.astype('float32')
 x_test = x_test_0 / 350
