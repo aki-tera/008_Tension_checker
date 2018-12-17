@@ -7,6 +7,27 @@ from matplotlib.pyplot import figure
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+def get_average_data():
+    """
+    ファイルから得たデータを平均化する
+    Parameters
+    ----------
+    Returns
+    ----------
+    """
+    #GAD_current_path = os.getcwd()
+    #os.chdir(GAD_current_path)
+    #ファイルからデータを読み込み
+    GAD_import_data = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=[1,]+list(range(33,183)))
+    #先頭ラベルのみファイル上書き設定
+    #各列の平均値をファイルに出力する
+    pd.DataFrame(np.mean((GAD_import_data[np.where(GAD_import_data[:,0]==0),:]), axis=1)).to_csv("average.csv", index=False)
+    #読み込んだデータのラベルの最大値を使ってループを回す
+    for row in range(int(np.max(GAD_import_data[:,0]))):
+        #各列の平均値をファイルに出力する
+        pd.DataFrame(np.mean((GAD_import_data[np.where(GAD_import_data[:,0]==row+1),:]), axis=1)).to_csv("average.csv", mode="a", header=False, index=False)
+
+
 def get_train_data02():
     """
     ファイル名で分けられたファイルから所定のデータを分割して出力する
@@ -132,7 +153,8 @@ def Plot_data():
 def main():
     #get_train_data01()
     #get_train_data02()
-    Plot_data()
+    get_average_data()
+    #Plot_data()
 
 if __name__ == "__main__":
     main()
