@@ -16,3 +16,10 @@ pytyon3 + Atom + IDLE
   * from matplotlib.pyplot import figure
   * import matplotlib.pyplot as plt
   * import matplotlib.cm as cm
+  * import matplotlib.ticker as tick
+
+  * import keras
+  * from keras.models import Sequential
+  * from keras.layers import Dense, Dropout
+  * from keras.optimizers import RMSprop
+  * from keras.models import load_model
