@@ -19,21 +19,13 @@ def get_average_data():
     #os.chdir(GAD_current_path)
     #ファイルからデータを読み込み
     GAD_import_data = np.loadtxt("training.csv", skiprows=1, delimiter=",", usecols=[1,]+list(range(33,183)))
-    #読み込んだデータのラベルの最大値を使ってループを回す
+    #先頭ラベルのみファイル上書き設定
+    #各列の平均値をファイルに出力する
     pd.DataFrame(np.mean((GAD_import_data[np.where(GAD_import_data[:,0]==0),:]), axis=1)).to_csv("average.csv", index=False)
+    #読み込んだデータのラベルの最大値を使ってループを回す
     for row in range(int(np.max(GAD_import_data[:,0]))):
         #各列の平均値をファイルに出力する
-        print(row)
         pd.DataFrame(np.mean((GAD_import_data[np.where(GAD_import_data[:,0]==row+1),:]), axis=1)).to_csv("average.csv", mode="a", header=False, index=False)
-
-
-
-    #for row in range(150):
-    #    GAD_average[int(GAD_import_label[row])] +=  GAD_import_data[row,:]
-    #    temp_counter[int(GAD_import_label[row])] += 1
-    #for row in range(10):
-    #    GAD_average[row] /= temp_counter[row]
-    #print(GAD_average)
 
 
 def get_train_data02():
